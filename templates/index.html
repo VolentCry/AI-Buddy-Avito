@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>AI-buddy · Адаптация стажёра</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<section id="avito-onboarding" aria-label="Адаптация стажёра">
+  <header class="app-header">
+    <span class="wordmark"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Авито<span class="tech">Тех</span></span>
+    <span class="divider" aria-hidden="true"></span>
+    <span class="section-name">Адаптация</span>
+  </header>
+  <div class="workspace">
+    <aside class="context" aria-labelledby="week-heading">
+      <h2 id="week-heading">Первая неделя</h2>
+      <p class="team">Загружаем профиль…</p>
+      <section class="task" aria-label="Первая задача">
+        <p class="task-label">Первая задача</p>
+        <strong>Проверить исправление на стенде</strong>
+        <ol class="steps">
+          <li>Запросить доступ</li>
+          <li>Дождаться согласования</li>
+          <li>Проверить исправление</li>
+        </ol>
+      </section>
+      <p class="task-note">Учебный сценарий. Команда, стенд и заявки — тестовые.</p>
+    </aside>
+    <main class="conversation" aria-labelledby="chat-heading">
+      <header class="chat-header">
+        <span class="chat-icon" aria-hidden="true">✦</span>
+        <div><h1 id="chat-heading">Помощник стажёра</h1><p class="model-status" id="model-status">Подключаемся…</p></div>
+      </header>
+      <div class="thread">
+        <div id="messages" role="log" aria-label="Диалог" aria-live="polite"></div>
+        <button class="secondary suggestion" id="suggestion" type="button" hidden>На Catalog Dev вижу 403. Что делать?</button>
+        <p id="chat-loading" class="model-status" role="status" hidden>Помощник готовит ответ…</p>
+        <section class="request" aria-labelledby="request-heading" hidden>
+          <div class="request-head">
+            <span class="resource-icon" aria-hidden="true">↗</span>
+            <div><h2 id="request-heading">Доступ к Catalog Dev</h2><p class="request-info" id="request-info">Чтение</p></div>
+          </div>
+          <div class="receipt" aria-live="polite">
+            <strong id="request-status"></strong>
+            <p id="next-step"></p>
+          </div>
+          <div class="request-start"><button type="button" class="primary" id="prepare" hidden>Подготовить заявку</button></div>
+          <form class="request-form" hidden>
+            <dl>
+              <div><dt>Стенд</dt><dd>Catalog Dev</dd></div>
+              <div><dt>Уровень доступа</dt><dd>Чтение</dd></div>
+              <div><dt>Причина</dt><dd>Проверка исправления по первой задаче</dd></div>
+            </dl>
+            <div class="actions"><button class="primary" type="submit">Отправить заявку</button><button class="secondary" id="cancel" type="button">Отмена</button></div>
+          </form>
+          <button type="button" class="text-button" id="refresh">Проверить статус</button>
+        </section>
+        <div id="error-panel" role="alert" hidden><p id="error-text"></p><button type="button" class="secondary" id="retry">Повторить проверку</button></div>
+      </div>
+      <form class="composer">
+        <input type="text" aria-label="Сообщение помощнику" placeholder="Написать сообщение" required maxlength="2000" disabled>
+        <button type="submit" class="send" aria-label="Отправить сообщение" disabled><span aria-hidden="true">↑</span></button>
+      </form>
+    </main>
+  </div>
+  <footer class="demo">
+    <label for="profile">Тестовый профиль</label>
+    <select id="profile" disabled aria-label="Тестовый профиль"></select>
+    <span>AI-buddy · демо для хакатона</span>
+  </footer>
+</section>
+<noscript>Для работы диалога и отправки заявки включи JavaScript.</noscript>
+</body>
+</html>

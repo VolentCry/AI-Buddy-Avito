@@ -46,3 +46,9 @@ pgdata/
 .antigravity/
 
 *.log
+
+# Python and local demo data
+.venv/
+__pycache__/
+.pytest_cache/
+instance/

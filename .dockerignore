@@ -1,0 +1,13 @@
+.git
+.venv
+.env
+.env.*
+*.pem
+*.key
+instance
+__pycache__
+.pytest_cache
+.coverage
+htmlcov
+node_modules
+docs/avito-onboarding.html
