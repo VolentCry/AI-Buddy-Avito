@@ -1,0 +1,133 @@
+#avito-onboarding {
+    --paper: light-dark(#fff, #191919);
+    --ink: light-dark(#141414, #f5f5f5);
+    --muted-ink: light-dark(#686662, #b9b7b1);
+    --line: light-dark(#e7e9ec, #373a40);
+    --neutral: light-dark(#f2f3f5, #272a2f);
+    --sidebar: light-dark(#f8f9fb, #1e2024);
+    --blue-paper: light-dark(#e4f6ff, #163344);
+    --link: light-dark(#006995, #71d2ff);
+    --brand-blue: #00aaff;
+    --button: light-dark(#0075b3, #71d2ff);
+    --button-text: light-dark(#fff, #101d27);
+    --positive: light-dark(#12663a, #91e1ae);
+    --positive-paper: light-dark(#e5f7ec, #1c3729);
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 15px/1.44 Arial, sans-serif;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  #avito-onboarding *, #avito-onboarding *::before { box-sizing: border-box; }
+  #avito-onboarding [hidden] { display: none !important; }
+  #avito-onboarding :is(h1,h2,p,dl,dd) { margin: 0; }
+  #avito-onboarding .app-header { display: flex; align-items: center; gap: 17px; min-height: 66px; padding: 12px clamp(18px, 3vw, 32px); border-bottom: 1px solid var(--line); }
+  #avito-onboarding .wordmark { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 24px; font-weight: 750; letter-spacing: -.8px; }
+  #avito-onboarding .tech { font-weight: 400; letter-spacing: -.6px; margin-left: -2px; }
+  #avito-onboarding .brand-mark { position: relative; display: block; width: 24px; height: 24px; }
+  #avito-onboarding .brand-mark i { position: absolute; display: block; border-radius: 50%; }
+  #avito-onboarding .brand-mark i:nth-child(1) { width: 6px; height: 6px; top: 1px; left: 4px; background: #a169f7; }
+  #avito-onboarding .brand-mark i:nth-child(2) { width: 11px; height: 11px; top: 0; right: 1px; background: var(--brand-blue); }
+  #avito-onboarding .brand-mark i:nth-child(3) { width: 13px; height: 13px; bottom: 1px; left: 0; background: #04c65d; }
+  #avito-onboarding .brand-mark i:nth-child(4) { width: 8px; height: 8px; bottom: 2px; right: 1px; background: #ff4d6e; }
+  #avito-onboarding .divider { width: 1px; height: 22px; background: var(--line); }
+  #avito-onboarding .section-name { font-weight: 600; }
+  #avito-onboarding .workspace { display: grid; grid-template-columns: minmax(190px, 26%) minmax(0, 1fr); }
+  #avito-onboarding .context { padding: 26px clamp(16px, 2.7vw, 28px); border-right: 1px solid var(--line); background: var(--sidebar); }
+  #avito-onboarding .context h2 { font-size: 20px; line-height: 1.2; }
+  #avito-onboarding .team { margin-top: 5px; font-size: 14px; color: var(--muted-ink); }
+  #avito-onboarding .task { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 17px; }
+  #avito-onboarding .task-label { margin-bottom: 4px; font-size: 13px; color: var(--muted-ink); }
+  #avito-onboarding .steps { display: grid; gap: 11px; list-style: none; margin: 15px 0 0; padding: 0; font-size: 13px; color: var(--muted-ink); }
+  #avito-onboarding .steps li { display: flex; align-items: baseline; gap: 8px; }
+  #avito-onboarding .steps li::before { content: ""; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  #avito-onboarding .steps li[aria-current="step"] { color: var(--link); font-weight: 600; }
+  #avito-onboarding .steps li[aria-current="step"]::before { background: var(--brand-blue); }
+  #avito-onboarding .steps li.done::before { background: var(--positive); }
+  #avito-onboarding .conversation { min-width: 0; }
+  #avito-onboarding .chat-header { display: flex; align-items: center; gap: 11px; padding: 14px clamp(16px, 3vw, 32px); border-bottom: 1px solid var(--line); }
+  #avito-onboarding .chat-header h1 { font-size: 20px; letter-spacing: -.3px; line-height: 1.2; }
+  #avito-onboarding :is(.chat-icon,.resource-icon) { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--blue-paper); color: var(--link); }
+  #avito-onboarding .chat-header svg, #avito-onboarding .request-head svg, #avito-onboarding .send svg { width: 18px; height: 18px; }
+  #avito-onboarding .thread { display: grid; align-content: start; gap: 12px; min-height: 315px; padding: 23px clamp(16px, 3vw, 32px) 18px; }
+  #avito-onboarding :is(.outgoing,.incoming) { width: fit-content; max-width: min(90%, 480px); padding: 10px 13px; overflow-wrap: anywhere; }
+  #avito-onboarding .outgoing { justify-self: end; background: var(--blue-paper); border-radius: 14px 14px 4px 14px; }
+  #avito-onboarding .incoming { background: var(--neutral); border-radius: 14px 14px 14px 4px; }
+  #avito-onboarding .source { margin-top: 7px; color: var(--link); font-size: 13px; }
+  #avito-onboarding .source summary { cursor: pointer; padding: 4px 0; }
+  #avito-onboarding .source p { margin-top: 5px; color: var(--muted-ink); }
+  #avito-onboarding .request { width: min(100%, 390px); border: 1px solid var(--line); border-radius: 12px; padding: 13px; }
+  #avito-onboarding .request-head { display: flex; gap: 10px; align-items: center; }
+  #avito-onboarding .request-head h2 { font-size: 16px; }
+  #avito-onboarding .resource-icon { border-radius: 8px; }
+  #avito-onboarding .request-info { color: var(--muted-ink); font-size: 13px; }
+  #avito-onboarding .request-start, #avito-onboarding .receipt, #avito-onboarding .request-form { margin-top: 12px; }
+  #avito-onboarding .request-form dl { margin-bottom: 12px; }
+  #avito-onboarding .request-form dl div { display: grid; grid-template-columns: minmax(90px, 37%) 1fr; gap: 8px; margin-top: 5px; font-size: 14px; }
+  #avito-onboarding dt, #avito-onboarding .receipt p { color: var(--muted-ink); }
+  #avito-onboarding .receipt p { margin-top: 4px; font-size: 14px; }
+  #avito-onboarding .receipt strong { display: inline-block; padding: 4px 9px; border-radius: 6px; color: var(--link); background: var(--blue-paper); font-size: 13px; }
+  #avito-onboarding .receipt[data-status="approved"] strong { color: var(--positive); background: var(--positive-paper); }
+  #avito-onboarding .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  #avito-onboarding button { font: inherit; border: 0; border-radius: 8px; padding: 8px 13px; min-height: 40px; }
+  #avito-onboarding button:hover { filter: brightness(.94); }
+  #avito-onboarding .primary { color: var(--button-text); background: var(--button); }
+  #avito-onboarding .secondary { color: var(--ink); background: var(--neutral); }
+  #avito-onboarding .followups { display: grid; gap: 8px; }
+  #avito-onboarding .followups:empty { display: none; }
+  #avito-onboarding .composer { display: flex; gap: 8px; border-top: 1px solid var(--line); padding: 12px clamp(16px, 3vw, 32px); }
+  #avito-onboarding .composer input { flex: 1; min-width: 0; color: var(--ink); font: inherit; font-size: 16px; background: var(--neutral); border: 1px solid transparent; border-radius: 9px; padding: 8px 12px; }
+  #avito-onboarding .composer input::placeholder { color: var(--muted-ink); }
+  #avito-onboarding .send { display: grid; place-items: center; width: 42px; padding: 0; color: var(--button-text); background: var(--button); }
+  #avito-onboarding .send:has(svg) span { display: none; }
+  #avito-onboarding .demo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 42px; border-top: 1px solid var(--line); padding: 6px clamp(18px, 3vw, 32px); color: var(--muted-ink); font-size: 12px; }
+  #avito-onboarding .text-button { color: var(--link); background: transparent; min-height: 34px; padding: 4px 6px; }
+  @media (max-width: 610px) {
+    #avito-onboarding .workspace { grid-template-columns: 1fr; }
+    #avito-onboarding .context { border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 16px; }
+    #avito-onboarding .task { border: 0; padding: 0; margin-top: 9px; }
+    #avito-onboarding .steps { display: flex; flex-wrap: wrap; column-gap: 14px; row-gap: 6px; margin-top: 8px; }
+    #avito-onboarding .thread { min-height: auto; }
+  }
+  @media (pointer: coarse) {
+    #avito-onboarding button { min-height: 44px; }
+  }
+
+:root { color-scheme: light; }
+body { margin: 0; padding: 48px 24px; background: #f2f3f5; font-family: Arial, sans-serif; }
+#avito-onboarding { max-width: 1060px; margin: 0 auto; box-shadow: 0 8px 32px #172c4210; }
+#avito-onboarding .conversation { display: flex; flex-direction: column; }
+#avito-onboarding .thread { flex: 1; min-height: 400px; }
+#messages { display: grid; gap: 12px; }
+#avito-onboarding .message-text, #avito-onboarding .source-excerpt { white-space: pre-wrap; }
+#avito-onboarding .source-excerpt { max-height: 260px; overflow: auto; }
+#avito-onboarding .handoff textarea {
+  display: block;
+  width: 100%;
+  margin: 4px 0 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--neutral);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+#avito-onboarding .generation-notice { margin-top: 9px; font-size: 11px; color: var(--muted-ink); }
+#avito-onboarding .model-status { margin-top: 4px; color: var(--muted-ink); font-size: 12px; }
+#avito-onboarding .task-note { margin-top: 28px; font-size: 12px; color: var(--muted-ink); }
+#avito-onboarding .suggestion { justify-self: start; text-align: left; color: var(--link); border: 1px solid var(--line); background: var(--paper); }
+#avito-onboarding button { cursor: pointer; }
+#avito-onboarding button:disabled, #avito-onboarding select:disabled { cursor: wait; opacity: .6; }
+#avito-onboarding :is(button,input,select,summary):focus-visible { outline: 3px solid #00aaff; outline-offset: 3px; }
+#avito-onboarding select { min-height: 34px; max-width: 100%; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
+#error-panel { padding: 12px; border-radius: 8px; background: #fff3e6; color: #814500; }
+#error-panel button { margin-top: 8px; }
+@media (max-width: 610px) {
+  body { padding: 12px 8px; }
+  #avito-onboarding .app-header { gap: 12px; }
+  #avito-onboarding .task-note { margin-top: 12px; }
+  #avito-onboarding .thread { min-height: 260px; }
+  #avito-onboarding .demo { gap: 8px; }
+}

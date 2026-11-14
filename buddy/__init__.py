@@ -1,0 +1,1 @@
+"""AI-buddy demo services."""
