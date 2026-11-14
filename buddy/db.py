@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS browser_sessions (
     csrf_token TEXT NOT NULL,
     pending_question TEXT,
     confirmed_resource TEXT,
+    pending_action TEXT,
     expires_at TIMESTAMPTZ NOT NULL DEFAULT now() + interval '7 days'
 );
 CREATE TABLE IF NOT EXISTS access_requests (
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS access_requests (
     access_level TEXT NOT NULL CHECK (access_level = 'read'),
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'granted')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (user_id, resource_id, access_level)
 );
 CREATE TABLE IF NOT EXISTS messages (
@@ -64,8 +66,14 @@ def initialize():
             ALTER TABLE user_access ADD COLUMN IF NOT EXISTS status TEXT NOT NULL
                 DEFAULT 'granted' CHECK (status IN ('missing', 'granted'));
             ALTER TABLE user_access ALTER COLUMN status DROP DEFAULT;
+            ALTER TABLE browser_sessions ADD COLUMN IF NOT EXISTS pending_action TEXT;
+            ALTER TABLE access_requests ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
             INSERT INTO user_access (user_id, resource_id, access_level, status)
             VALUES ('intern-pregranted', 'catalog-dev', 'read', 'granted') ON CONFLICT DO NOTHING;
+            INSERT INTO access_requests (user_id, resource_id, access_level, status)
+            VALUES ('intern-pending', 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING;
+            INSERT INTO access_requests (user_id, resource_id, access_level, status)
+            VALUES ('intern-catalog-pending', 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING;
         """)
 
 
@@ -85,11 +93,11 @@ def get_session(session_id):
         ).fetchone()
 
 
-def set_clarification(session_id, question, resource):
+def set_clarification(session_id, question, resource, action=None):
     with connect() as conn:
         conn.execute(
-            "UPDATE browser_sessions SET pending_question = %s, confirmed_resource = %s WHERE id = %s",
-            (question, resource, session_id),
+            "UPDATE browser_sessions SET pending_question = %s, confirmed_resource = %s, pending_action = %s WHERE id = %s",
+            (question, resource, action, session_id),
         )
 
 

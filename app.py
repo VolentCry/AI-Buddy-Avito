@@ -64,7 +64,11 @@ def create_app(test_config=None):
             session["sid"] = g.browser_session["id"]
             session.permanent = True
         user_id = g.browser_session["user_id"]
-        g.actor = {**service.PROFILES[user_id], "id": user_id}
+        g.actor = {
+            **service.PROFILES[user_id],
+            "id": user_id,
+            "confirmed_resource": g.browser_session.get("confirmed_resource"),
+        }
         if request.method == "POST":
             origin = request.headers.get("Origin")
             expected = urlsplit(request.host_url)
@@ -150,15 +154,16 @@ def create_app(test_config=None):
         if not service.permitted(g.actor):
             answer = "Инструкции и доступы этой команды ограничены. Обратись к наставнику своей команды."
         elif knowledge.another_resource(message) or (pending and "catalog dev" not in message.lower()):
-            db.set_clarification(g.browser_session["id"], message, None)
+            db.set_clarification(g.browser_session["id"], message, None, action="prepare_request")
             answer = "Уточни название стенда для этой задачи. В демонстрации доступен Catalog Dev."
             action["type"] = "clarify"
         elif not resource_known() and "catalog dev" not in message.lower():
-            db.set_clarification(g.browser_session["id"], message, None)
+            db.set_clarification(g.browser_session["id"], message, None, action="prepare_request")
             answer = "На каком стенде возникает ошибка? Уточни название в своей задаче."
             action["type"] = "clarify"
         else:
-            db.set_clarification(g.browser_session["id"], None, "catalog-dev")
+            db.set_clarification(g.browser_session["id"], None, "catalog-dev", action=None)
+            g.actor["confirmed_resource"] = "catalog-dev"
             document = knowledge.select_document(app.extensions["knowledge"], g.actor, effective_message, state["status"])
             if not document:
                 answer = "В доступных инструкциях нет ответа на этот вопрос. Уточни его у наставника. Я могу помочь с доступом к Catalog Dev и проверкой исправления."
@@ -183,6 +188,8 @@ def create_app(test_config=None):
             return error("resource_unknown", "Сначала уточни стенд в диалоге.", 400)
         try:
             state, created = service.create_access_request(g.actor, data["resource_id"], data["access_level"])
+        except PermissionError:
+            return error("forbidden", "Этот доступ недоступен для текущего профиля.", 403)
         except service.ServiceUnavailable:
             return error("result_unknown", "Результат отправки пока неизвестен. Проверь заявку.", 503)
         return jsonify(card=service.card_for(state)), 201 if created else 200
@@ -198,7 +205,7 @@ def create_app(test_config=None):
         with db.connect() as conn:
             record = conn.execute("""
                 WITH approved AS (
-                    UPDATE access_requests SET status = 'granted' WHERE id = %s
+                    UPDATE access_requests SET status = 'granted', updated_at = now() WHERE id = %s
                     RETURNING user_id, resource_id, access_level
                 ), grant_access AS (
                     INSERT INTO user_access (user_id, resource_id, access_level, status)
@@ -219,9 +226,11 @@ def create_app(test_config=None):
         with db.connect() as conn:
             conn.execute("DELETE FROM messages WHERE user_id = %s", (profile,))
             conn.execute("DELETE FROM access_requests WHERE user_id = %s", (profile,))
-            if profile != "intern-pregranted":
+            if profile not in ("intern-pregranted", "intern-catalog-granted"):
                 conn.execute("DELETE FROM user_access WHERE user_id = %s", (profile,))
-            conn.execute("UPDATE browser_sessions SET pending_question = NULL, confirmed_resource = NULL WHERE user_id = %s", (profile,))
+            conn.execute("UPDATE browser_sessions SET pending_question = NULL, confirmed_resource = NULL, pending_action = NULL WHERE user_id = %s", (profile,))
+            if profile in ("intern-pending", "intern-catalog-pending"):
+                conn.execute("INSERT INTO access_requests (user_id, resource_id, access_level, status) VALUES (%s, 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING", (profile,))
         click.echo("Тестовый профиль сброшен.")
 
     return app
