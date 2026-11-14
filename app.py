@@ -30,7 +30,7 @@ def create_app(test_config=None):
             key_file.write(secrets.token_hex(32))
     app.config.update(
         SECRET_KEY=os.getenv("SECRET_KEY") or secret_path.read_text(),
-        DATABASE_URL=os.getenv("DATABASE_URL", "postgresql://buddy:buddy-local-demo@localhost:55432/buddy"),
+        DATABASE_URL=os.getenv("DATABASE_URL", "postgresql://buddy:buddy-local-demo@127.0.0.1:55432/buddy"),
         LLM_BASE_URL=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
         LLM_MODEL=os.getenv("LLM_MODEL", "gpt-6-luna"),
         LLM_API_KEY=os.getenv("LLM_API_KEY", ""),
@@ -64,6 +64,9 @@ def create_app(test_config=None):
             session["sid"] = g.browser_session["id"]
             session.permanent = True
         user_id = g.browser_session["user_id"]
+        user_id = service.ALIASES.get(user_id, user_id)
+        if user_id not in service.PROFILES:
+            user_id = "intern-catalog"
         g.actor = {
             **service.PROFILES[user_id],
             "id": user_id,
@@ -127,7 +130,10 @@ def create_app(test_config=None):
     @app.post("/api/session")
     def switch_profile():
         profile_id = request.json.get("profile_id")
-        if not isinstance(profile_id, str) or profile_id not in service.PROFILES:
+        if not isinstance(profile_id, str):
+            return error("invalid_profile", "Выбери тестовый профиль из списка.", 400)
+        profile_id = service.ALIASES.get(profile_id, profile_id)
+        if profile_id not in service.PROFILES:
             return error("invalid_profile", "Выбери тестовый профиль из списка.", 400)
         with db.connect() as conn:
             conn.execute("DELETE FROM browser_sessions WHERE id = %s", (g.browser_session["id"],))
@@ -226,11 +232,11 @@ def create_app(test_config=None):
         with db.connect() as conn:
             conn.execute("DELETE FROM messages WHERE user_id = %s", (profile,))
             conn.execute("DELETE FROM access_requests WHERE user_id = %s", (profile,))
-            if profile not in ("intern-pregranted", "intern-catalog-granted"):
+            if profile != "intern-pregranted":
                 conn.execute("DELETE FROM user_access WHERE user_id = %s", (profile,))
             conn.execute("UPDATE browser_sessions SET pending_question = NULL, confirmed_resource = NULL, pending_action = NULL WHERE user_id = %s", (profile,))
-            if profile in ("intern-pending", "intern-catalog-pending"):
-                conn.execute("INSERT INTO access_requests (user_id, resource_id, access_level, status) VALUES (%s, 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING", (profile,))
+            if profile == "intern-pending":
+                conn.execute("INSERT INTO access_requests (user_id, resource_id, access_level, status) VALUES ('intern-pending', 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING")
         click.echo("Тестовый профиль сброшен.")
 
     return app

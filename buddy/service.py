@@ -9,9 +9,11 @@ PROFILES = {
     "intern-pregranted": {"name": "Стажёр · доступ уже есть", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
     "intern-unknown": {"name": "Стажёр · стенд неизвестен", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": None},
     "intern-other": {"name": "Стажёр другой команды", "team": "other", "team_name": "Другая команда", "role": "intern", "resource_id": None},
-    "intern-catalog-pending": {"name": "Стажёр Каталога (заявка на согласовании)", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
-    "intern-catalog-granted": {"name": "Стажёр Каталога (доступ выдан)", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
-    "intern-catalog-no-env": {"name": "Стажёр Каталога (стенд не указан)", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": None},
+}
+ALIASES = {
+    "intern-catalog-pending": "intern-pending",
+    "intern-catalog-granted": "intern-pregranted",
+    "intern-catalog-no-env": "intern-unknown",
 }
 REQUEST_FIELDS = {
     "resource_id": "catalog-dev", "resource_name": "Catalog Dev", "access_level": "read",

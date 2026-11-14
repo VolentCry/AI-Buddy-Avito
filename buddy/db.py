@@ -72,8 +72,6 @@ def initialize():
             VALUES ('intern-pregranted', 'catalog-dev', 'read', 'granted') ON CONFLICT DO NOTHING;
             INSERT INTO access_requests (user_id, resource_id, access_level, status)
             VALUES ('intern-pending', 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING;
-            INSERT INTO access_requests (user_id, resource_id, access_level, status)
-            VALUES ('intern-catalog-pending', 'catalog-dev', 'read', 'pending') ON CONFLICT DO NOTHING;
         """)
 
 
