@@ -31,6 +31,7 @@ def select_document(documents, actor, message, status):
     document_id = "catalog-dev-access"
     if status == "granted":
         document_id = "catalog-dev-verify"
+    if status in ("granted", "unknown"):
         if re.search(r"403|не пуска|нет доступа|не могу (?:попасть|войти)", message, re.I):
             document_id = "catalog-dev-403"
     return allowed.get(document_id)

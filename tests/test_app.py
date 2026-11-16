@@ -264,3 +264,72 @@ def test_cli_approval_errors_and_scoped_reset(app, client, headers):
     assert count_requests(app) == 0
     assert client.get("/api/context").json["history"] == []
     assert client.get("/api/context").json["card"]["status"] == "missing"
+
+
+def test_unknown_status_selects_403_document(app):
+    docs = app.extensions["knowledge"]
+    actor = {**service.PROFILES["intern-catalog"], "id": "intern-catalog"}
+    selected_403 = knowledge.select_document(docs, actor, "Получаю 403 ошибку на стенде", "unknown")
+    assert selected_403 is not None
+    assert selected_403["id"] == "catalog-dev-403"
+
+    selected_access = knowledge.select_document(docs, actor, "Как получить доступ?", "unknown")
+    assert selected_access is not None
+    assert selected_access["id"] == "catalog-dev-access"
+
+
+def test_create_access_request_requires_confirmed_resource(app):
+    actor_unknown = {**service.PROFILES["intern-unknown"], "id": "intern-unknown"}
+    with app.app_context():
+        with pytest.raises(PermissionError):
+            service.create_access_request(actor_unknown, "catalog-dev", "read")
+
+        actor_confirmed = {**actor_unknown, "confirmed_resource": "catalog-dev"}
+        state, created = service.create_access_request(actor_confirmed, "catalog-dev", "read")
+        assert created is True
+        assert state["request"]["number"] == "ACC-001"
+
+
+def test_pending_profile_flow(app, client, headers):
+    with app.app_context(), db.connect() as conn:
+        conn.execute("INSERT INTO access_requests (user_id, resource_id, access_level, status) VALUES ('intern-pending', 'catalog-dev', 'read', 'pending')")
+    headers = switch(client, headers, "intern-pending")
+    ctx = client.get("/api/context").json
+    assert ctx["card"]["status"] == "pending"
+    assert ctx["card"]["request"]["number"] == "ACC-001"
+    response = send(client, headers, "Заявка согласована?").json
+    assert response["action"]["type"] == "show_request"
+    assert response["card"]["status"] == "pending"
+    dup = create_request(client, headers)
+    assert dup.status_code == 200
+    assert dup.json["card"]["status"] == "pending"
+    assert count_requests(app) == 1
+
+
+def test_updated_at_in_access_requests(app, client, headers):
+    create_request(client, headers)
+    with app.app_context(), db.connect() as conn:
+        before = conn.execute("SELECT created_at, updated_at FROM access_requests WHERE id = 1").fetchone()
+        assert before["created_at"] is not None
+        assert before["updated_at"] is not None
+    app.test_cli_runner().invoke(args=["approve-request", "ACC-001"])
+    with app.app_context(), db.connect() as conn:
+        after = conn.execute("SELECT created_at, updated_at, status FROM access_requests WHERE id = 1").fetchone()
+        assert after["status"] == "granted"
+        assert after["updated_at"] >= after["created_at"]
+
+
+def test_pending_action_in_browser_sessions(app, client, headers):
+    headers = switch(client, headers, "intern-unknown")
+    send(client, headers, "У меня 403, оформи доступ")
+    with app.app_context(), db.connect() as conn:
+        session = conn.execute("SELECT pending_action, pending_question, confirmed_resource FROM browser_sessions WHERE user_id = 'intern-unknown'").fetchone()
+        assert session["pending_action"] == "prepare_request"
+        assert session["confirmed_resource"] is None
+
+    send(client, headers, "Catalog Dev")
+    with app.app_context(), db.connect() as conn:
+        session = conn.execute("SELECT pending_action, pending_question, confirmed_resource FROM browser_sessions WHERE user_id = 'intern-unknown'").fetchone()
+        assert session["pending_action"] is None
+        assert session["confirmed_resource"] == "catalog-dev"
+

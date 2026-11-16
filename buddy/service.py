@@ -5,9 +5,15 @@ from buddy.db import connect
 
 PROFILES = {
     "intern-catalog": {"name": "Стажёр Каталога", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
+    "intern-pending": {"name": "Стажёр · заявка на согласовании", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
     "intern-pregranted": {"name": "Стажёр · доступ уже есть", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": "catalog-dev"},
     "intern-unknown": {"name": "Стажёр · стенд неизвестен", "team": "catalog", "team_name": "Каталог", "role": "intern", "resource_id": None},
     "intern-other": {"name": "Стажёр другой команды", "team": "other", "team_name": "Другая команда", "role": "intern", "resource_id": None},
+}
+ALIASES = {
+    "intern-catalog-pending": "intern-pending",
+    "intern-catalog-granted": "intern-pregranted",
+    "intern-catalog-no-env": "intern-unknown",
 }
 REQUEST_FIELDS = {
     "resource_id": "catalog-dev", "resource_name": "Catalog Dev", "access_level": "read",
@@ -62,8 +68,12 @@ def get_access_state(actor):
     return {"status": status, "request": request}
 
 
+def resource_confirmed(actor, resource):
+    return actor.get("resource_id") == resource or actor.get("confirmed_resource") == resource
+
+
 def create_access_request(actor, resource, access_level):
-    if not permitted(actor) or resource != "catalog-dev" or access_level != "read":
+    if not permitted(actor) or resource != "catalog-dev" or access_level != "read" or not resource_confirmed(actor, resource):
         raise PermissionError()
     if current_app.config.get("REQUEST_FAILURE_MODE") == "before":
         raise ServiceUnavailable()
