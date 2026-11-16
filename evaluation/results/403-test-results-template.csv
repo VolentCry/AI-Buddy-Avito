@@ -1,0 +1,1 @@
+﻿run_id,participant_id,method,scenario,attempt_order,app_commit,llm_mode,started_at,finished_at,elapsed_to_action_sec,active_sec,mentor_wait_sec,pause_sec,mentor_work_sec,approval_wait_sec,provisioning_wait_sec,owner_reply_wait_sec,post_wait_mode,mentor_help_used,moderator_hint_used,outcome,error_count,unnecessary_request_count,understood_next_step,notes
